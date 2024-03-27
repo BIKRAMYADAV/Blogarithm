@@ -9,22 +9,25 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-connectDB()
+connectDB()   
+ 
 
 app.listen(PORT, (req, res) => {
     console.log(`The server is listening on port ${PORT}`)
 })
 
-app.get('/add-blog', (req, res) => {
-    console.log('data received')
+
+
+app.get('/showBlog',async (req, res) => {
+   await Blog.find().then(users => res.json(users)).catch(err => console.log(err))
 })
-//routes
-app.post('http://localhost:5173/add-blog', async (req, res) => {
-   const {author, snippet, content} = req.body
-   data = new Blog({
-    author,
-    snippet,
-    content
-   })
-  await data.save()
+
+app.post('/addBlog', async (req, res) => {
+   try{
+    let blog = new Blog(req.body);
+    let result = await blog.save();
+    res.send(result);
+   } catch (error) {
+    res.status(500).send(error.message);
+   }
 })

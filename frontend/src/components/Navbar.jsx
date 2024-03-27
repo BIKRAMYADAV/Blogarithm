@@ -10,7 +10,7 @@ function Navbar() {
   return (
     <div className='flex flex-row w-full bg-black text-white h-16 content-center'>
       <div className='flex  basis-1/2 py-4 px-4'>
-        <h1 className='text-green-700'>BLOGARITHM</h1>
+        <h1 className='text-white-700'>BLOGARiTHM</h1>
       </div>
       <div className='flex py-4'>
         <ul className='flex space-x-4 content-center '>
