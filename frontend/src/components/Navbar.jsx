@@ -15,7 +15,7 @@ function Navbar() {
       <div className='flex py-4'>
         <ul className='flex space-x-4 content-center '>
         <li>
-              <Link to="/" className='hover:text-green-700'>Home</Link>
+              <Link to="/home" className='hover:text-green-700'>Home</Link>
 </li>
             <li>
               <Link to="/add-blog" className='hover:text-green-700'>Add</Link>
