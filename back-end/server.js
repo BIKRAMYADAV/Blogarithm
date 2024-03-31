@@ -14,6 +14,8 @@ app.use(cors())
 app.use(cookieparser())
 
 connectDB()   
+
+const secretKey = 'shhh'
  
 
 app.listen(PORT, (req, res) => {
@@ -26,7 +28,7 @@ app.get('/showBlog',async (req, res) => {
    await Blog.find().then(users => res.json(users)).catch(err => console.log(err))
 })
 
-app.post('/addBlog', async (req, res) => {
+app.post('/addBlog',verifyToken, async (req, res) => {
    try{
     let blog = new Blog(req.body);
     let result = await blog.save();
@@ -47,7 +49,7 @@ app.post('/register', async (req, res) => {
          res.status(400).send('user already exists')
       }
       //encrypting
-      const myencpassword = bcrypt.hash(password,10)
+      const myencpassword = await bcrypt.hash(password,10)
 
       const user = await User.create({
          firstname,
@@ -59,21 +61,51 @@ app.post('/register', async (req, res) => {
       //generating a token for user and sending it
      const token =  jwt.sign(
          {id: user._id, email: email},
-         'shhh',
+         secretKey,
          {
             expiresIn : "2h"
          }
       );
+      console.log(token);
       user.token = token
+      console.log('user token : ', user.token)
       user.password = undefined
 
       res.status(201).json(user)
+      // localStorage.setItem('jwtToken', res.token);
 
    }
    catch(error){
          console.log(error);
    }
 })
+
+
+function verifyToken(req, res, next) {
+   // Get auth header value
+   const authHeader = req.headers['authorization'];
+
+   // Check if auth header is present
+   if (typeof authHeader !== 'undefined') {
+       // Extract token from auth header (Bearer token)
+       const token = authHeader.split(' ')[1];
+
+       // Verify token
+       jwt.verify(token, secretKey, (err, decoded) => {
+           if (err) {
+               return res.status(403).json({ error: 'Invalid token' });
+           }
+
+           // Set decoded user ID in request object
+           req._id = decoded._id;
+           next(); // Call next middleware
+       });
+   } else {
+       // No auth header
+       res.status(401).json({ error: 'Unauthorized' });
+   }
+}
+
 
 app.post('/login', async (req, res) => {
    try{

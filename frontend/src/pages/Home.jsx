@@ -5,7 +5,12 @@ import axios from 'axios'
 function Home() {  
   const [blogs, setBlog] = useState([])  
   useEffect(() => {
-    axios.get('http://localhost:3000/showBlog')
+    const jwtToken = localStorage.getItem('jwtToken');
+    axios.get('http://localhost:3000/showBlog', {
+      headers: {
+        'Authorization': `Bearer ${jwtToken}` // Include JWT token in the request headers
+    }
+    })
     .then(blog => {
       console.log(blog.data);
       setBlog(blog.data)}).catch(err => console.log(err))
